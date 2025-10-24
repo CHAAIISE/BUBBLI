@@ -21,7 +21,9 @@
     "@web3modal/wagmi": "latest",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
+    "express": "^5.1.0",
     "lucide-react": "^0.454.0",
     "mongodb": "^6.20.0",
     "mongoose": "^8.19.2",
@@ -38,6 +40,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "nodemon": "^3.1.10",
     "postcss": "^8.5",
     "tailwindcss": "4.1.16",
     "typescript": "^5"
