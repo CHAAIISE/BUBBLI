@@ -93,7 +93,7 @@ contract MoodNFT is ERC721, Ownable, ReentrancyGuard {
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         _requireOwned(tokenId);
         
-        string memory baseURL = "https://server-nft.onrender.com/api";
+        string memory baseURL = "https://server-nft.onrender.com/api/";
         Mood mood = _tokenMoods[tokenId];
         
         return string(abi.encodePacked(baseURL, _toString(tokenId), "?mood=", _toString(uint256(mood))));
