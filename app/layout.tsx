@@ -12,6 +12,20 @@ export const metadata: Metadata = {
   title: "BUBBLO - Express Your Mood",
   description: "Farcaster NFT mood app",
   generator: "v0.app",
+  other: {
+    "fc:miniapp": JSON.stringify({
+      version: "next",
+      imageUrl: "https://your-app-url.vercel.app/embed-image.png",
+      button: {
+        title: "Open BUBBLO",
+        action: {
+          type: "launch_miniapp",
+          name: "BUBBLO",
+          url: "https://your-app-url.vercel.app",
+        },
+      },
+    }),
+  },
 }
 
 export default function RootLayout({

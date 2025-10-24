@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@farcaster/miniapp-sdk": "^0.2.1",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-toast": "^1.2.15",
     "@tailwindcss/postcss": "^4.1.16",

@@ -7,6 +7,7 @@ import { WagmiProvider } from "wagmi"
 import { createWeb3Modal } from "@web3modal/wagmi/react"
 import { config } from "@/lib/wagmi-config"
 import { Toaster } from "@/components/ui/toaster"
+import { MiniAppProvider } from "@/components/miniapp-provider"
 import { useState } from "react"
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ""
@@ -22,11 +23,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient())
 
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-        <Toaster />
-      </QueryClientProvider>
-    </WagmiProvider>
+    <MiniAppProvider>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+          <Toaster />
+        </QueryClientProvider>
+      </WagmiProvider>
+    </MiniAppProvider>
   )
 }
