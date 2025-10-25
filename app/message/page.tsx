@@ -171,11 +171,6 @@ export default function MessagePage() {
               )}
             </Button>
           </Card>
-
-          <div className="text-center text-sm text-muted-foreground">
-            <p>💡 Your message will be synced to MongoDB automatically</p>
-            <p>🔗 It will appear in your NFT metadata</p>
-          </div>
         </div>
       </div>
       <BottomNav />

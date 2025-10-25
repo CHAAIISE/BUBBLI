@@ -2,14 +2,15 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, MessageSquare, Smile, History } from "lucide-react"
+import { Home, MessageSquare, Smile, Palette, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
   { href: "/", icon: Home, label: "Home" },
   { href: "/mood", icon: Smile, label: "Mood" },
+  { href: "/style", icon: Palette, label: "Style" },
   { href: "/message", icon: MessageSquare, label: "Message" },
-  { href: "/history", icon: History, label: "History" },
+  { href: "/social", icon: Users, label: "Social" },
 ]
 
 export function BottomNav() {

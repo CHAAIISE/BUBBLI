@@ -1,93 +1,73 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { useReadContract } from "wagmi"
 import { Card } from "@/components/ui/card"
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/lib/contract"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Palette, Smile } from "lucide-react"
+import { MessageSquare, Smile } from "lucide-react"
 import Link from "next/link"
+import { NFTAvatar } from "@/components/nft-avatar"
+import { MOOD_STYLES } from "@/lib/mood-styles"
+import { useState, useEffect } from "react"
 
 interface NFTDisplayProps {
   tokenId: number
 }
 
-const MOOD_LABELS = ["Happy", "Neutral", "Sad", "Angry", "Sleepy", "Cool"]
-const MOOD_EMOJIS = ["😊", "😐", "😢", "😡", "😴", "😎"]
-
 export function NFTDisplay({ tokenId }: NFTDisplayProps) {
-  const [metadata, setMetadata] = useState<any>(null)
-
-  const { data: tokenURI } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
-    functionName: "tokenURI",
-    args: tokenId !== undefined ? [BigInt(tokenId)] : undefined,
-    query: {
-      enabled: tokenId !== undefined,
-    },
-  })
-
   const { data: mood } = useReadContract({
-    address: CONTRACT_ADDRESS,
+    address: CONTRACT_ADDRESS as `0x\${string}`,
     abi: CONTRACT_ABI,
     functionName: "getMood",
     args: tokenId !== undefined ? [BigInt(tokenId)] : undefined,
-    query: {
-      enabled: tokenId !== undefined,
-    },
+    query: { enabled: tokenId !== undefined },
   })
 
-  useEffect(() => {
-    if (tokenURI && typeof tokenURI === "string") {
-      fetch(tokenURI)
-        .then((res) => res.json())
-        .then(setMetadata)
-        .catch(console.error)
-    }
-  }, [tokenURI])
+  const { data: message } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x\${string}`,
+    abi: CONTRACT_ABI,
+    functionName: "getMessage",
+    args: tokenId !== undefined ? [BigInt(tokenId)] : undefined,
+    query: { enabled: tokenId !== undefined },
+  })
 
   const moodIndex = mood ? Number(mood) : 0
-  const currentMood = MOOD_LABELS[moodIndex] || "Unknown"
-  const currentEmoji = MOOD_EMOJIS[moodIndex] || "❓"
+  const moodStyle = MOOD_STYLES[moodIndex as keyof typeof MOOD_STYLES] || MOOD_STYLES[0]
+  const userMessage = message as string || ""
 
-  const backgroundColor = "#8B5CF6"
-  const bubbleColor = "#FFFFFF"
+  const [customStyle, setCustomStyle] = useState<{
+    headColor?: string
+    bodyColor?: string
+    bgColor?: string
+    bgItem?: string
+  }>({})
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`nft-style-\${tokenId}`)
+    if (saved) {
+      setCustomStyle(JSON.parse(saved))
+    }
+  }, [tokenId])
 
   return (
     <div className="space-y-4">
       <Card className="overflow-hidden">
-        <div className="aspect-square p-8 transition-colors duration-300" style={{ backgroundColor }}>
-          {metadata?.image ? (
-            <img
-              src={metadata.image || "/placeholder.svg"}
-              alt={metadata.name || "NFT"}
-              className="h-full w-full rounded-lg object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center">
-              <div
-                className="flex h-48 w-48 items-center justify-center rounded-full shadow-2xl transition-colors duration-300"
-                style={{ backgroundColor: bubbleColor }}
-              >
-                <span className="text-8xl">{currentEmoji}</span>
-              </div>
-            </div>
-          )}
+        <div className="aspect-square p-8">
+          <NFTAvatar mood={moodIndex} headColor={customStyle.headColor} bodyColor={customStyle.bodyColor} bgColor={customStyle.bgColor} bgItem={customStyle.bgItem} className="w-full h-full" />
         </div>
         <div className="space-y-4 p-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold">{metadata?.name || `BUBBLO #${tokenId}`}</h3>
-            <Badge variant="secondary" className="text-lg">
-              {currentEmoji} {currentMood}
-            </Badge>
+            <h3 className="text-xl font-bold">BUBBLO #{tokenId}</h3>
+            <Badge variant="secondary" className="text-lg">{moodStyle.name}</Badge>
           </div>
-          {metadata?.description && <p className="text-sm text-muted-foreground">{metadata.description}</p>}
+          {userMessage && (
+            <div className="p-3 bg-muted/50 rounded-lg">
+              <p className="text-sm italic">"{userMessage}"</p>
+            </div>
+          )}
         </div>
       </Card>
-
-      {/* Quick Actions */}
       <div className="grid grid-cols-2 gap-4">
         <Button asChild variant="outline" size="lg" className="gap-2 bg-transparent">
           <Link href="/mood">
@@ -96,9 +76,9 @@ export function NFTDisplay({ tokenId }: NFTDisplayProps) {
           </Link>
         </Button>
         <Button asChild variant="outline" size="lg" className="gap-2 bg-transparent">
-          <Link href="/style">
-            <Palette className="h-5 w-5" />
-            Customize Style
+          <Link href="/message">
+            <MessageSquare className="h-5 w-5" />
+            Set Message
           </Link>
         </Button>
       </div>
