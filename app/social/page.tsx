@@ -28,7 +28,8 @@ export default function SocialPage() {
     const fetchAllNFTs = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://server-nft.onrender.com/api/nfts?limit=100');
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://server-nft.onrender.com/api';
+        const response = await fetch(`${apiUrl}/nfts?limit=100`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch NFTs');
