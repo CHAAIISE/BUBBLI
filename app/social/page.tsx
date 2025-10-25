@@ -76,21 +76,17 @@ export default function SocialPage() {
         <div className="max-w-6xl mx-auto">
           <Card className="p-12 text-center">
             <div className="flex flex-col items-center gap-4">
-              <div className="text-6xl">🚀</div>
+              <div className="text-6xl">�</div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 Beta
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 max-w-md">
-                La fonctionnalité Social est en version Beta. 
-                Réessaye dans quelques minutes !
-              </p>
               <Button 
                 onClick={() => router.back()}
                 variant="outline"
                 className="gap-2 mt-4"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Retour
+                Back
               </Button>
             </div>
           </Card>
