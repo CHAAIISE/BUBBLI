@@ -1,6 +1,6 @@
 // BUBBLO Mood NFT Contract Configuration
-// Deployed on Base Sepolia
-export const CONTRACT_ADDRESS = "0xb54b20C431e73313e9d46Ad84C55971943448Cd3" as `0x${string}`
+// Deployed on Base Mainnet
+export const CONTRACT_ADDRESS = "0x8E7D4E14583a37770C743D33092bbCC4E3Dd656d" as `0x${string}`
 
 // Mood enum values (matching Solidity enum)
 export const MOODS = {
