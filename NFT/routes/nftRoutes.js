@@ -177,36 +177,9 @@ router.put('/nft/:tokenId', async (req, res) => {
 });
 
 /**
- * GET /api/nft/:tokenId
- * Récupère les données complètes d'un NFT (sans générer l'image)
- */
-router.get('/nft/:tokenId', async (req, res) => {
-  try {
-    const { tokenId } = req.params;
-
-    const nft = await NFTMetadata.findOne({ tokenId: parseInt(tokenId) });
-    
-    if (!nft) {
-      return res.status(404).json({ error: 'NFT not found' });
-    }
-
-    res.json({
-      success: true,
-      nft: {
-        ...nft.toObject(),
-        moodName: getMoodName(nft.mood)
-      }
-    });
-
-  } catch (error) {
-    console.error('Error fetching NFT:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-/**
  * GET /api/nfts
  * Récupère tous les NFTs créés (pour la page Social)
+ * IMPORTANT: Cette route doit être AVANT /api/nft/:tokenId pour éviter le conflit de route
  */
 router.get('/nfts', async (req, res) => {
   try {
@@ -237,6 +210,34 @@ router.get('/nfts', async (req, res) => {
 
   } catch (error) {
     console.error('Error fetching all NFTs:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/nft/:tokenId
+ * Récupère les données complètes d'un NFT (sans générer l'image)
+ */
+router.get('/nft/:tokenId', async (req, res) => {
+  try {
+    const { tokenId } = req.params;
+
+    const nft = await NFTMetadata.findOne({ tokenId: parseInt(tokenId) });
+    
+    if (!nft) {
+      return res.status(404).json({ error: 'NFT not found' });
+    }
+
+    res.json({
+      success: true,
+      nft: {
+        ...nft.toObject(),
+        moodName: getMoodName(nft.mood)
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching NFT:', error);
     res.status(500).json({ error: error.message });
   }
 });
