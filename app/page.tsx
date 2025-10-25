@@ -1,14 +1,17 @@
 "use client"
 
-import { useAccount } from "wagmi"
+import { useAccount, useDisconnect } from "wagmi"
 import { WalletConnect } from "@/components/wallet-connect"
 import { NFTDisplay } from "@/components/nft-display"
 import { MintButton } from "@/components/mint-button"
 import { BottomNav } from "@/components/bottom-nav"
 import { useNFTOwnership } from "@/hooks/use-nft-ownership"
+import { Button } from "@/components/ui/button"
+import { LogOut } from "lucide-react"
 
 export default function HomePage() {
   const { address, isConnected } = useAccount()
+  const { disconnect } = useDisconnect()
   const { hasNFT, tokenId, isLoading } = useNFTOwnership(address)
 
   if (!isConnected) {
@@ -42,6 +45,19 @@ export default function HomePage() {
   return (
     <>
       <div className="flex min-h-screen flex-col pb-24">
+        {/* DEBUG: Temporary disconnect button */}
+        <div className="fixed top-4 right-4 z-50">
+          <Button
+            onClick={() => disconnect()}
+            variant="outline"
+            size="sm"
+            className="gap-2 bg-background/80 backdrop-blur-sm"
+          >
+            <LogOut className="h-4 w-4" />
+            Disconnect
+          </Button>
+        </div>
+
         <div className="flex-1 p-6">
           {!hasNFT ? (
             <div className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center space-y-8">
