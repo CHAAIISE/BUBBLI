@@ -74,16 +74,25 @@ export default function SocialPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 dark:from-purple-950 dark:via-pink-950 dark:to-blue-950 p-4 pb-24">
         <div className="max-w-6xl mx-auto">
-          <Card className="p-6 text-center">
-            <p className="text-red-600 dark:text-red-400 mb-4">Error: {error}</p>
-            <Button 
-              onClick={() => router.back()}
-              variant="outline"
-              className="gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Go Back
-            </Button>
+          <Card className="p-12 text-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="text-6xl">🚀</div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                En déploiement
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 max-w-md">
+                La fonctionnalité Social est en cours de déploiement sur le serveur. 
+                Réessaye dans quelques minutes !
+              </p>
+              <Button 
+                onClick={() => router.back()}
+                variant="outline"
+                className="gap-2 mt-4"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Retour
+              </Button>
+            </div>
           </Card>
         </div>
       </div>
