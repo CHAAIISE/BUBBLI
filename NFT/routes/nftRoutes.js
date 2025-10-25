@@ -74,8 +74,8 @@ router.post('/nft/mint', async (req, res) => {
   try {
     const { tokenId, owner, mood, message } = req.body;
 
-    // Validation
-    if (!tokenId || !owner) {
+    // Validation (tokenId peut être 0, donc on vérifie !== undefined)
+    if (tokenId === undefined || !owner) {
       return res.status(400).json({ error: 'Missing required fields: tokenId, owner' });
     }
 

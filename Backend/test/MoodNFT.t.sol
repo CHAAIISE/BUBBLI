@@ -17,7 +17,8 @@ contract MoodNFTTest is Test {
 
     // Test 1: Mint basique avec humeur HAPPY
     function testMintNFTHappy() public {
-        uint256 tokenId = nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        uint256 tokenId = nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         assertEq(nft.ownerOf(tokenId), user1);
         assertEq(uint256(nft.getMood(tokenId)), uint256(MoodNFT.Mood.HAPPY));
@@ -27,8 +28,11 @@ contract MoodNFTTest is Test {
 
     // Test 2: Mint avec différentes humeurs
     function testMintWithDifferentMoods() public {
-        uint256 id1 = nft.mintNFT(user1, MoodNFT.Mood.SAD);
-        uint256 id2 = nft.mintNFT(user2, MoodNFT.Mood.EXCITEMENT);
+        vm.prank(user1);
+        uint256 id1 = nft.mintNFT(MoodNFT.Mood.SAD);
+
+        vm.prank(user2);
+        uint256 id2 = nft.mintNFT(MoodNFT.Mood.EXCITEMENT);
 
         assertEq(uint256(nft.getMood(id1)), uint256(MoodNFT.Mood.SAD));
         assertEq(uint256(nft.getMood(id2)), uint256(MoodNFT.Mood.EXCITEMENT));
@@ -36,22 +40,30 @@ contract MoodNFTTest is Test {
 
     // Test 3: Ne peut pas minter deux fois
     function testCannotMintTwice() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.startPrank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.expectRevert("User has already minted an NFT");
-        nft.mintNFT(user1, MoodNFT.Mood.SAD);
+        nft.mintNFT(MoodNFT.Mood.SAD);
+        vm.stopPrank();
     }
 
-    // Test 4: Seul le owner peut minter
-    function testOnlyOwnerCanMint() public {
+    // Test 4: N'importe qui peut minter (public)
+    function testAnyoneCanMint() public {
         vm.prank(user1);
-        vm.expectRevert();
-        nft.mintNFT(user2, MoodNFT.Mood.HAPPY);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
+
+        vm.prank(user2);
+        nft.mintNFT(MoodNFT.Mood.SAD);
+
+        assertTrue(nft.hasMinted(user1));
+        assertTrue(nft.hasMinted(user2));
     }
 
     // Test 5: Changer l'humeur
     function testChangeMood() public {
-        uint256 tokenId = nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        uint256 tokenId = nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.prank(user1);
         nft.changeMood(MoodNFT.Mood.SAD);
@@ -61,7 +73,8 @@ contract MoodNFTTest is Test {
 
     // Test 6: Tester toutes les humeurs
     function testAllMoods() public {
-        uint256 tokenId = nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        uint256 tokenId = nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.startPrank(user1);
 
@@ -82,7 +95,8 @@ contract MoodNFTTest is Test {
 
     // Test 7: Ne peut pas changer vers la même humeur
     function testCannotChangeSameMood() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.prank(user1);
         vm.expectRevert("New mood must be different from the current mood");
@@ -91,7 +105,8 @@ contract MoodNFTTest is Test {
 
     // Test 8: Seul le propriétaire peut changer son humeur
     function testOnlyOwnerCanChangeMood() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.prank(user2); // user2 essaie de changer l'humeur de user1
         vm.expectRevert("User has not minted an NFT");
@@ -100,7 +115,8 @@ contract MoodNFTTest is Test {
 
     // Test 9: TokenURI contient les bonnes informations
     function testTokenURI() public {
-        uint256 tokenId = nft.mintNFT(user1, MoodNFT.Mood.EXCITEMENT);
+        vm.prank(user1);
+        uint256 tokenId = nft.mintNFT(MoodNFT.Mood.EXCITEMENT);
 
         string memory uri = nft.tokenURI(tokenId);
 
@@ -111,7 +127,8 @@ contract MoodNFTTest is Test {
 
     // Test 10: Récupérer le token ID par adresse
     function testGetTokenIdByAddress() public {
-        uint256 tokenId = nft.mintNFT(user1, MoodNFT.Mood.BOREDOM);
+        vm.prank(user1);
+        uint256 tokenId = nft.mintNFT(MoodNFT.Mood.BOREDOM);
 
         assertEq(nft.getTokenIdByAddress(user1), tokenId);
     }
@@ -127,11 +144,13 @@ contract MoodNFTTest is Test {
         vm.expectEmit(true, false, false, true);
         emit MoodNFT.NFTMinted(user1, 0);
 
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
     }
 
     function testMoodChangeEvent() public {
-        uint256 tokenId = nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        uint256 tokenId = nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.expectEmit(true, false, false, true);
         emit MoodNFT.MoodChanged(tokenId, MoodNFT.Mood.HAPPY, MoodNFT.Mood.SAD);
@@ -144,10 +163,12 @@ contract MoodNFTTest is Test {
     function testTotalSupply() public {
         assertEq(nft.totalSupply(), 0);
 
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
         assertEq(nft.totalSupply(), 1);
 
-        nft.mintNFT(user2, MoodNFT.Mood.SAD);
+        vm.prank(user2);
+        nft.mintNFT(MoodNFT.Mood.SAD);
         assertEq(nft.totalSupply(), 2);
     }
 
@@ -155,7 +176,8 @@ contract MoodNFTTest is Test {
 
     // Test 14: Définir un message
     function testSetMessage() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.prank(user1);
         nft.setMessage("Hello from my NFT!");
@@ -166,7 +188,8 @@ contract MoodNFTTest is Test {
 
     // Test 15: Récupérer son propre message
     function testGetMyMessage() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.prank(user1);
         nft.setMessage("My personal message");
@@ -178,7 +201,8 @@ contract MoodNFTTest is Test {
 
     // Test 16: Message trop long
     function testMessageTooLong() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         // Créer un message de 201 caractères
         string
@@ -191,7 +215,8 @@ contract MoodNFTTest is Test {
 
     // Test 17: Seul le propriétaire peut définir un message
     function testOnlyOwnerCanSetMessage() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.prank(user2);
         vm.expectRevert("User has not minted an NFT");
@@ -200,7 +225,8 @@ contract MoodNFTTest is Test {
 
     // Test 18: Event MessageUpdated
     function testMessageUpdatedEvent() public {
-        uint256 tokenId = nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        uint256 tokenId = nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.expectEmit(true, false, false, true);
         emit MoodNFT.MessageUpdated(tokenId, "Test message");
@@ -211,7 +237,8 @@ contract MoodNFTTest is Test {
 
     // Test 19: Mettre à jour un message existant
     function testUpdateMessage() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.startPrank(user1);
         nft.setMessage("First message");
@@ -226,7 +253,8 @@ contract MoodNFTTest is Test {
 
     // Test 20: Ne peut pas transférer le NFT
     function testCannotTransferNFT() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
         uint256 tokenId = nft.userTokenId(user1);
 
         vm.prank(user1);
@@ -236,7 +264,8 @@ contract MoodNFTTest is Test {
 
     // Test 21: Ne peut pas utiliser safeTransferFrom
     function testCannotSafeTransferNFT() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
         uint256 tokenId = nft.userTokenId(user1);
 
         vm.prank(user1);
@@ -246,7 +275,8 @@ contract MoodNFTTest is Test {
 
     // Test 22: Ne peut pas approuver
     function testCannotApprove() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
         uint256 tokenId = nft.userTokenId(user1);
 
         vm.prank(user1);
@@ -256,7 +286,8 @@ contract MoodNFTTest is Test {
 
     // Test 23: Ne peut pas setApprovalForAll
     function testCannotSetApprovalForAll() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.prank(user1);
         vm.expectRevert("Soulbound: Approval not allowed");
@@ -268,7 +299,8 @@ contract MoodNFTTest is Test {
     // Test 24: Workflow complet
     function testCompleteWorkflow() public {
         // 1. Mint
-        uint256 tokenId = nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        uint256 tokenId = nft.mintNFT(MoodNFT.Mood.HAPPY);
         assertEq(nft.ownerOf(tokenId), user1);
 
         // 2. Définir un message
@@ -297,7 +329,8 @@ contract MoodNFTTest is Test {
 
     // Test 25: Message vide est valide
     function testEmptyMessage() public {
-        nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.prank(user1);
         nft.setMessage("");
@@ -308,7 +341,8 @@ contract MoodNFTTest is Test {
 
     // Test 26: Tester toutes les humeurs disponibles
     function testAllMoodsAvailable() public {
-        uint256 tokenId = nft.mintNFT(user1, MoodNFT.Mood.HAPPY);
+        vm.prank(user1);
+        uint256 tokenId = nft.mintNFT(MoodNFT.Mood.HAPPY);
 
         vm.startPrank(user1);
 

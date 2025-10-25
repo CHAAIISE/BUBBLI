@@ -49,7 +49,7 @@ export default function MoodPage() {
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
 
   const handleMoodChange = async (moodId: number) => {
-    if (!tokenId) return
+    if (!hasNFT) return
 
     setSelectedMood(moodId)
 
@@ -57,8 +57,8 @@ export default function MoodPage() {
       writeContract({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
-        functionName: "setMood",
-        args: [BigInt(tokenId), moodId],
+        functionName: "changeMood",
+        args: [moodId],
       })
 
       toast({

@@ -5,7 +5,7 @@ import { useWriteContract, useWaitForTransactionReceipt } from "wagmi"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { Sparkles } from "lucide-react"
-import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/lib/contract"
+import { CONTRACT_ADDRESS, CONTRACT_ABI, MOODS } from "@/lib/contract"
 
 export function MintButton() {
   const { toast } = useToast()
@@ -20,10 +20,12 @@ export function MintButton() {
   const handleMint = async () => {
     try {
       setIsPending(true)
+      // Mint with HAPPY mood by default
       writeContract({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
-        functionName: "mint",
+        functionName: "mintNFT",
+        args: [MOODS.HAPPY],
       })
 
       toast({

@@ -23,21 +23,20 @@ export function NFTDisplay({ tokenId }: NFTDisplayProps) {
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "tokenURI",
-    args: [BigInt(tokenId)],
+    args: tokenId !== undefined ? [BigInt(tokenId)] : undefined,
+    query: {
+      enabled: tokenId !== undefined,
+    },
   })
 
   const { data: mood } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "getMood",
-    args: [BigInt(tokenId)],
-  })
-
-  const { data: style } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
-    functionName: "getStyle",
-    args: [BigInt(tokenId)],
+    args: tokenId !== undefined ? [BigInt(tokenId)] : undefined,
+    query: {
+      enabled: tokenId !== undefined,
+    },
   })
 
   useEffect(() => {
@@ -53,8 +52,8 @@ export function NFTDisplay({ tokenId }: NFTDisplayProps) {
   const currentMood = MOOD_LABELS[moodIndex] || "Unknown"
   const currentEmoji = MOOD_EMOJIS[moodIndex] || "❓"
 
-  const backgroundColor = style?.backgroundColor || "#8B5CF6"
-  const bubbleColor = style?.bubbleColor || "#FFFFFF"
+  const backgroundColor = "#8B5CF6"
+  const bubbleColor = "#FFFFFF"
 
   return (
     <div className="space-y-4">
