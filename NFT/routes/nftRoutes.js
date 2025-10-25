@@ -205,6 +205,43 @@ router.get('/nft/:tokenId', async (req, res) => {
 });
 
 /**
+ * GET /api/nfts
+ * Récupère tous les NFTs créés (pour la page Social)
+ */
+router.get('/nfts', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 50;
+    const skip = parseInt(req.query.skip) || 0;
+
+    const nfts = await NFTMetadata.find()
+      .sort({ lastUpdated: -1 })
+      .limit(limit)
+      .skip(skip);
+
+    const total = await NFTMetadata.countDocuments();
+
+    res.json({
+      success: true,
+      count: nfts.length,
+      total,
+      nfts: nfts.map(nft => ({
+        tokenId: nft.tokenId,
+        owner: nft.owner,
+        mood: nft.mood,
+        moodName: getMoodName(nft.mood),
+        message: nft.message,
+        lastUpdated: nft.lastUpdated,
+        createdAt: nft.createdAt
+      }))
+    });
+
+  } catch (error) {
+    console.error('Error fetching all NFTs:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
  * GET /api/nft/user/:address
  * Récupère tous les NFTs possédés par une adresse
  */
