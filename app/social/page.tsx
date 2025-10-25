@@ -78,10 +78,10 @@ export default function SocialPage() {
             <div className="flex flex-col items-center gap-4">
               <div className="text-6xl">🚀</div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                En déploiement
+                Beta
               </h2>
               <p className="text-gray-600 dark:text-gray-400 max-w-md">
-                La fonctionnalité Social est en cours de déploiement sur le serveur. 
+                La fonctionnalité Social est en version Beta. 
                 Réessaye dans quelques minutes !
               </p>
               <Button 
