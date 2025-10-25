@@ -7,19 +7,17 @@ import "../src/MoodNFT.sol";
 
 contract MoodNFTDeployScript is Script {
     function run() external returns (MoodNFT) {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address deployer = vm.addr(deployerPrivateKey);
-
+        // When using --account flag, Foundry handles the keystore automatically.
+        // Call vm.startBroadcast() without argument to let Foundry use the account.
         console.log("========================================");
         console.log("Deploying MoodNFT Contract");
         console.log("========================================");
-        console.log("Deployer Address:", deployer);
         console.log("Chain ID:", block.chainid);
         console.log("----------------------------------------");
 
-        vm.startBroadcast(deployerPrivateKey);
+        vm.startBroadcast();
+        console.log("Deployer Address:", msg.sender);
 
-        // Déployer le contrat MoodNFT
         MoodNFT nft = new MoodNFT();
 
         vm.stopBroadcast();
@@ -44,13 +42,8 @@ contract MoodNFTDeployScript is Script {
     }
 }
 
-// Script pour tester le contrat après déploiement
 contract MoodNFTTestScript is Script {
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address deployer = vm.addr(deployerPrivateKey);
-
-        // Adresse du contrat déployé (à mettre à jour)
         address nftAddress = vm.envAddress("MOOD_NFT_ADDRESS");
         MoodNFT nft = MoodNFT(nftAddress);
 
@@ -58,29 +51,26 @@ contract MoodNFTTestScript is Script {
         console.log("Testing MoodNFT Contract");
         console.log("========================================");
         console.log("Contract Address:", address(nft));
-        console.log("Tester Address:", deployer);
         console.log("----------------------------------------");
 
-        vm.startBroadcast(deployerPrivateKey);
+        vm.startBroadcast();
+        address deployer = msg.sender;
+        console.log("Tester Address:", deployer);
 
-        // Test 1: Mint un NFT
-        console.log("Test 1: Minting NFT with HAPPY mood...");
         uint256 tokenId = nft.mintNFT(deployer, MoodNFT.Mood.HAPPY);
+        console.log("Test 1: Minting NFT with HAPPY mood...");
         console.log("Minted Token ID:", tokenId);
         console.log("Owner:", nft.ownerOf(tokenId));
         console.log("Mood:", uint256(nft.getMood(tokenId)));
 
-        // Test 2: Définir un message
         console.log("\nTest 2: Setting message...");
         nft.setMessage("Hello from Bubbli! This is my first mood NFT!");
         console.log("Message set:", nft.getMyMessage());
 
-        // Test 3: Changer l'humeur
         console.log("\nTest 3: Changing mood to EXCITEMENT...");
         nft.changeMood(MoodNFT.Mood.EXCITEMENT);
         console.log("New Mood:", uint256(nft.getMood(tokenId)));
 
-        // Test 4: Mettre à jour le message
         console.log("\nTest 4: Updating message...");
         nft.setMessage("Now I'm full of excitement!");
         console.log("Updated Message:", nft.getMyMessage());
